@@ -34,6 +34,7 @@
   --labelW: 264px;                /* set by the script */
   --axisH: 72px;
   --r: 8px;
+  --gap: 8px;                      /* space between the branch bubbles */
   --shadow-1: 0 1px 2px rgba(27, 27, 60, .14), 0 1px 3px 1px rgba(27, 27, 60, .07);
   --shadow-2: 0 4px 8px 3px rgba(27, 27, 60, .15), 0 1px 3px rgba(27, 27, 60, .3);
   color-scheme: light;
@@ -78,14 +79,14 @@ button { font: inherit; color: inherit; }
 
 /* ---------- timeline frame ---------- */
 .stage { flex: 1 1 auto; min-height: 0; display: flex; padding: 0 16px 16px; }
-.tl-card { position: relative; flex: 1 1 auto; min-width: 0; min-height: 300px; display: flex; overflow: hidden; border-radius: 12px; background: rgba(255, 255, 255, .64); box-shadow: var(--shadow-1); }
-.tl-scroll { position: relative; z-index: 0; flex: 1 1 auto; min-width: 0; overflow: auto; overscroll-behavior: contain; scroll-padding: var(--axisH) 0 0 var(--labelW); }
+.tl-card { position: relative; flex: 1 1 auto; min-width: 0; min-height: 300px; display: flex; overflow: hidden; border-radius: 12px; }
+.tl-scroll { position: relative; z-index: 0; flex: 1 1 auto; min-width: 0; overflow: auto; overscroll-behavior: contain; scroll-padding: calc(var(--axisH) + var(--gap)) 0 0 var(--labelW); }
 .tl-scroll:focus-visible { outline-offset: -2px; }
 .tl-scroll.dragging, .tl-scroll.dragging * { cursor: grabbing !important; user-select: none; }
 .tl-inner { position: relative; }
 
 /* sticky time axis */
-.tl-head { position: sticky; top: 0; z-index: 30; display: flex; background: var(--surface); box-shadow: 0 1px 0 var(--grid); }
+.tl-head { position: sticky; top: 0; z-index: 30; display: flex; margin-bottom: var(--gap); border-radius: 12px; background: var(--surface); overflow: clip; }
 .tl-corner { position: sticky; left: 0; z-index: 3; flex: none; width: var(--labelW); height: var(--axisH); display: flex; flex-direction: column; justify-content: flex-end; gap: 7px; padding: 0 16px 13px 20px; background: var(--surface); box-shadow: inset -1px 0 0 var(--grid); }
 .tl-axis { position: relative; flex: none; height: var(--axisH); }
 .ax-row { position: absolute; left: 0; right: 0; }
@@ -123,17 +124,17 @@ button { font: inherit; color: inherit; }
 .today-line { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--gold-deep); }
 
 /* ---------- branches & lanes ---------- */
-.branch { border-bottom: 1px solid var(--grid); }
+.branch { position: relative; margin-bottom: var(--gap); border-radius: 12px; background: rgba(255, 255, 255, .64); overflow: clip; }
+.branch:last-child { margin-bottom: 0; }
+.row-head > .lbl { border-top-left-radius: 12px; }
+.branch > .row:last-child > .lbl { border-bottom-left-radius: 12px; }
 .row { display: flex; border-bottom: 1px solid var(--grid-soft); }
 .row:last-child { border-bottom: 0; }
-.lbl { position: sticky; left: 0; z-index: 10; flex: none; width: var(--labelW); min-width: 0; display: flex; align-items: center; gap: 10px; padding: 0 14px 0 0; background: var(--surface); box-shadow: inset -1px 0 0 var(--grid); }
+.lbl { position: sticky; left: 0; z-index: 10; flex: none; width: var(--labelW); min-width: 0; display: flex; align-items: center; gap: 10px; padding: 0 14px 0 12px; background: var(--surface); box-shadow: inset -1px 0 0 var(--grid); }
 .scrolled-x .lbl { box-shadow: inset -1px 0 0 var(--grid), 8px 0 10px -8px rgba(20, 18, 40, .2); }
 .track { position: relative; flex: none; cursor: grab; }
-.rail, .lane-rail { align-self: stretch; flex: none; width: 4px; }
-.rail { background: var(--c); }
-.lane-rail { background: var(--lc); }
-.lbl-branch { min-height: 46px; cursor: pointer; background: color-mix(in srgb, var(--c) 8%, var(--surface)); }
-.lbl-branch:hover { background: color-mix(in srgb, var(--c) 13%, var(--surface)); }
+.lbl-branch { min-height: 46px; cursor: pointer; }
+.lbl-branch:hover { background: var(--grid-soft); }
 .lbl-branch:focus-visible { outline-offset: -3px; }
 .chev { flex: none; width: 16px; height: 16px; color: var(--ink-2); transition: transform .15s; }
 .is-collapsed .chev { transform: rotate(-90deg); }
@@ -142,8 +143,7 @@ button { font: inherit; color: inherit; }
 .prog { display: flex; align-items: center; gap: 8px; font-size: 11.5px; line-height: 14px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .pbar { flex: none; width: 72px; height: 6px; overflow: hidden; border-radius: 3px; background: color-mix(in srgb, var(--c) 16%, #e8e8f2); }
 .pbar > i { display: block; height: 100%; border-radius: 3px; background: var(--c); }
-.track-head { cursor: pointer; background: color-mix(in srgb, var(--c) 4%, transparent); }
-.lbl-lane { background: color-mix(in srgb, var(--lc) 7%, var(--surface)); }
+.track-head { cursor: pointer; }
 .l-name { flex: 1 1 auto; min-width: 0; margin-left: 26px; overflow: hidden; font-size: 13px; line-height: 17px; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .l-prog { flex: none; display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; color: var(--ink-3); }
 .l-prog .pbar { width: 30px; height: 4px; }
@@ -231,7 +231,7 @@ button { font: inherit; color: inherit; }
 @keyframes sheet-in { from { opacity: .6; transform: translateY(30px); } }
 
 /* ---------- loading / error / debug ---------- */
-.state { position: absolute; inset: 0; overflow: auto; }
+.state { position: absolute; inset: 0; overflow: auto; border-radius: 12px; background: rgba(255, 255, 255, .64); }
 .sk { padding: 24px 20px; }
 .sk-msg { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; font-size: 13px; font-weight: 500; color: var(--ink-2); }
 .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #dcdbe6; border-top-color: var(--accent); animation: spin .8s linear infinite; }
@@ -258,21 +258,16 @@ button { font: inherit; color: inherit; }
 .compact .tl-corner { display: none; }
 .compact .row { display: block; }
 .compact .lbl { width: max-content; max-width: 100vw; background: transparent; box-shadow: none; }
-.compact .row-head { background: color-mix(in srgb, var(--c) 8%, var(--surface)); }
 .compact .lbl-branch { min-height: 44px; padding-right: 16px; }
-.compact .rail { display: none; }
-.compact .chev { margin-left: 12px; }
 .compact .b-text { flex-direction: row; align-items: center; gap: 12px; padding: 0; }
 .compact .lbl-lane { height: 30px; }
 .compact .lbl-lane.empty, .compact .track-head:empty { display: none; }
-.compact .lane-rail { align-self: center; height: 14px; margin-left: 12px; border-radius: 2px; }
 .compact .l-name { margin-left: 0; -webkit-line-clamp: 1; }
 @media (max-width: 640px) {
   .top { padding: 12px 14px 10px; gap: 10px; }
   .brand h1 { font-size: 18px; }
   .legend { max-width: calc(100% - 28px); margin: 0 14px 10px; padding: 8px 12px; gap: 8px 20px; }
-  .stage { padding: 0; }
-  .tl-card { border-radius: 0; box-shadow: 0 -1px 0 var(--grid); }
+  .stage { padding: 0 8px 8px; }
   .seg button { padding: 0 12px; }
   .btn-txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   #legendBtn { width: 40px; padding: 0; justify-content: center; }
@@ -895,8 +890,9 @@ function branchHTML(b, G) {
   const collapsed = S.collapsed.has(b.key);
   const sum = collapsed ? layoutSummary(b, G) : null;
   let html = `<section class="branch${collapsed ? ' is-collapsed' : ''}" style="--c:${b.color}">`
+    + bgHTML(G)
     + `<div class="row row-head">`
-    + `<div class="lbl lbl-branch" role="button" tabindex="0" data-toggle="${b.key}" aria-expanded="${!collapsed}"><span class="rail"></span>${CHEV}`
+    + `<div class="lbl lbl-branch" role="button" tabindex="0" data-toggle="${b.key}" aria-expanded="${!collapsed}">${CHEV}`
     + `<span class="b-text"><span class="b-name">${esc(b.name)}</span>${progHTML(doneCount(b.goals), b.goals.length)}</span></div>`
     + `<div class="track track-head" data-toggle="${b.key}" style="width:${G.width}px;height:${sum ? sum.height : L.headH}px">${sum ? sum.html : ''}</div>`
     + `</div>`;
@@ -905,8 +901,8 @@ function branchHTML(b, G) {
       const lay = layoutLane(lane.goals, G);
       const shade = lane.name ? `color-mix(in srgb, ${b.color} ${[62, 46, 34, 26][Math.min(lane.shade, 3)]}%, white)` : b.color;
       const label = !lane.name && !b.hasSubs
-        ? '<div class="lbl lbl-lane empty"><span class="lane-rail"></span></div>'
-        : `<div class="lbl lbl-lane"><span class="lane-rail"></span><span class="l-name">${lane.name ? esc(lane.name) : 'Általános'}</span>${progHTML(doneCount(lane.goals), lane.goals.length, true)}</div>`;
+        ? '<div class="lbl lbl-lane empty"></div>'
+        : `<div class="lbl lbl-lane"><span class="l-name">${lane.name ? esc(lane.name) : 'Általános'}</span>${progHTML(doneCount(lane.goals), lane.goals.length, true)}</div>`;
       html += `<div class="row row-lane" style="--lc:${shade}">${label}<div class="track" style="width:${G.width}px;height:${lay.height}px">${lay.items.map(itemHTML).join('')}</div></div>`;
     }
   }
@@ -920,7 +916,7 @@ function render() {
   const total = S.model.goals.length, done = doneCount(S.model.goals);
   el.inner.style.width = (G.labelW + G.width) + 'px';
   el.inner.innerHTML = `<div class="tl-head"><div class="tl-corner" style="--c:var(--accent)"><span class="c-title">Összesen</span>${progHTML(done, total)}</div>${axisHTML(G)}</div>`
-    + `<div class="tl-body">${bgHTML(G)}${S.model.branches.map(b => branchHTML(b, G)).join('')}</div>`;
+    + `<div class="tl-body">${S.model.branches.map(b => branchHTML(b, G)).join('')}</div>`;
   el.zoomBtns.forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.zoom === S.zoom)));
 }
 
