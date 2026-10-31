@@ -56,6 +56,7 @@ button { font: inherit; color: inherit; }
 .tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; }
 .updated { margin-right: 4px; font-size: 12px; color: var(--ink-2); white-space: nowrap; }
 .demo-badge { padding: 4px 10px; border-radius: 999px; background: #fff1cc; color: #7a4b00; font-size: 11.5px; font-weight: 500; white-space: nowrap; }
+.load-notice { padding: 4px 10px; border-radius: 8px; background: #fbe4e2; color: #7f1f1a; font-size: 12px; font-weight: 500; }
 .seg { display: inline-flex; overflow: hidden; background: rgba(255, 255, 255, .72); border: 1px solid var(--outline); border-radius: 20px; }
 .seg button { height: 38px; border: 0; border-left: 1px solid var(--outline); background: none; padding: 0 16px; font-size: 14px; font-weight: 500; color: var(--ink); cursor: pointer; transition: background .15s; }
 .seg button:first-child { border-left: 0; }
@@ -292,7 +293,8 @@ button { font: inherit; color: inherit; }
     </div>
     <div class="tools">
       <span class="updated" id="updated"></span>
-      <span class="demo-badge" id="demoBadge" title="A CSV_URL még nincs beállítva, ezért a roadmap_template.csv bemutató adatai látszanak." hidden>Bemutató adatok</span>
+      <span class="demo-badge" id="demoBadge" title="A SHEET_URL még nincs beállítva, ezért a roadmap_template.csv bemutató adatai látszanak." hidden>Bemutató adatok</span>
+      <span class="load-notice" id="loadNotice" role="status" hidden></span>
       <div class="seg needs-data" role="group" aria-label="Időskála">
         <button type="button" data-zoom="month" aria-pressed="false">Hónap</button>
         <button type="button" data-zoom="quarter" aria-pressed="false">Negyedév</button>
@@ -322,10 +324,22 @@ button { font: inherit; color: inherit; }
    SETTINGS — this block is the only part you normally need to edit
    ===================================================================== */
 const CONFIG = {
-  // 1) The Google Sheet link from  File > Share > Publish to web  (format: CSV).
-  //    Paste it between the quotes. Leave it empty ('') to show the demo data
-  //    from roadmap_template.csv (handy for testing).
-  CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSnDFGNyUsMOUs4pgPVWQgK1SkpRBaNpaTKv-HNouxiajMM4EcuBSZqUXn3UhGjpLWGOIvsZUncp5n3/pub?gid=659770143&single=true&output=csv',
+  // 1) The published Google Sheet: the link from  File > Share > Publish to web,
+  //    up to and including /pub. Leave it empty ('') to show the demo data from
+  //    roadmap_template.csv (handy for testing).
+  SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSnDFGNyUsMOUs4pgPVWQgK1SkpRBaNpaTKv-HNouxiajMM4EcuBSZqUXn3UhGjpLWGOIvsZUncp5n3/pub',
+
+  //    One line per branch, in display order. gid is the number after gid= in the
+  //    browser's address bar while that tab is open.
+  BRANCHES: [
+    { name: 'Elnökség', gid: '1131487874' },
+    { name: 'Ismeretterjesztés', gid: '398619702' },
+    { name: 'IT', gid: '348016245' },
+    { name: 'Pályázatírás', gid: '710740198' },
+    { name: 'Rendezvény- és közösségszervezés', gid: '1154723879' },
+    { name: 'Terapeuta képzés', gid: '647301097' },
+    { name: 'Tudományos', gid: '1406656462' },
+  ],
 
   // 2) Name in the page header.
   ORG_NAME: 'PSZÉRUM - Pszichedelikus Terápia Egyesület',
@@ -342,7 +356,7 @@ const CONFIG = {
   // 4) Zoom when the page opens: 'auto', 'month', 'quarter' or 'year'.
   DEFAULT_ZOOM: 'auto',
 
-  // 5) Branch colours, given out in the order branches first appear in the sheet:
+  // 5) Branch colours, given out in the order of BRANCHES:
   //    a soft purple-blue-green scale. A 9th+ branch is grey.
   BRANCH_COLORS: ['#8a78cc', '#7a80d4', '#6a8cd8', '#5b9ad2', '#4fa6c2', '#4cadab', '#52b294', '#68b67f'],
 };
@@ -438,7 +452,7 @@ const fmtNum = n => String(n).replace('.', ',');
 
 const el = {
   app: $('.app'), scroller: $('#scroller'), inner: $('#inner'), state: $('#state'), legend: $('#legend'), legendBtn: $('#legendBtn'),
-  updated: $('#updated'), demo: $('#demoBadge'), today: $('#todayBtn'), zoomBtns: [...document.querySelectorAll('[data-zoom]')],
+  updated: $('#updated'), demo: $('#demoBadge'), notice: $('#loadNotice'), today: $('#todayBtn'), zoomBtns: [...document.querySelectorAll('[data-zoom]')],
 };
 const S = { model: null, bands: null, range: null, zoom: 'quarter', geom: null, collapsed: new Set(), pop: null, warnings: [], focus: TODAY, quietUntil: 0, lastLeft: 0 };
 const SKELETON = '<div class="sk" aria-live="polite"><div class="sk-msg"><span class="spin"></span>Ütemterv betöltése…</div>'
@@ -468,8 +482,13 @@ function textW(text, cls) {
 }
 
 /* ---------- loading the sheet ---------- */
-async function fetchCSV() {
-  const base = String(CONFIG.CSV_URL || '').trim() || 'roadmap_template.csv';
+const isDemo = () => !String(CONFIG.SHEET_URL || '').trim() || !(CONFIG.BRANCHES || []).length;
+function sheetSources() {
+  if (isDemo()) return [{ url: 'roadmap_template.csv' }];
+  const base = String(CONFIG.SHEET_URL).trim().split('?')[0];
+  return CONFIG.BRANCHES.map(b => ({ name: b.name, url: `${base}?gid=${b.gid}&single=true&output=csv` }));
+}
+async function fetchCSV(base) {
   const url = base + (base.includes('?') ? '&' : '?') + '_=' + Date.now();   // cache-buster
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 20000);
@@ -586,25 +605,36 @@ const windowText = (key, short) => {
 };
 
 /* ---------- sheet rows → branches, lanes, goals ---------- */
-function buildModel(rows) {
+function buildModel(tables) {
+  const model = { branches: [], bmap: new Map(), goals: [] };
+  tables.forEach(t => addTable(model, t));
+  for (const b of model.branches) {
+    b.lanes.sort((a, c) => (a.name ? 1 : 0) - (c.name ? 1 : 0));   // general lane first, others keep sheet order
+    let i = 0;
+    for (const l of b.lanes) l.shade = l.name ? i++ : -1;
+    b.hasSubs = b.lanes.some(l => l.name);
+  }
+  return { branches: model.branches, goals: model.goals };
+}
+function addTable({ branches, bmap, goals }, { name, order, rows }) {
+  const place = name ? `${name}, row` : 'Row';
   const hi = rows.findIndex(r => r.some(c => String(c).trim()));
-  if (hi < 0) return { branches: [], goals: [] };
+  if (hi < 0) return;
   const header = rows[hi].map(h => HEADER_MAP[norm(String(h).replace(/^﻿/, ''))] || null);
   const col = {};
   header.forEach((k, i) => { if (k && !(k in col)) col[k] = i; });
   if (!('goal' in col)) throw new LoadError('columns', `Talált oszlopok: ${rows[hi].join(', ')}`);
-  for (const k of ['branch', 'horizon']) if (!(k in col)) warn(`Column "${k}" is missing from the sheet.`);
+  for (const k of name ? ['horizon'] : ['branch', 'horizon']) if (!(k in col)) warn(`${name ? name + ': c' : 'C'}olumn "${k}" is missing from the sheet.`);
 
-  const branches = [], bmap = new Map(), goals = [];
   for (let r = hi + 1; r < rows.length; r++) {
     const row = rows[r], rowNo = r + 1;
     if (!row.some(c => String(c == null ? '' : c).trim())) continue;               // empty row
     const get = k => (k in col ? String(row[col[k]] == null ? '' : row[col[k]]).trim() : '');
     const title = get('goal');
-    if (!title) { warn(`Row ${rowNo}: no goal title – row skipped.`); continue; }
-    const tag = `Row ${rowNo} ("${title}")`;
+    if (!title) { warn(`${place} ${rowNo}: no goal title – row skipped.`); continue; }
+    const tag = `${place} ${rowNo} ("${title}")`;
 
-    let bname = get('branch');
+    let bname = name || get('branch');
     if (!bname) { warn(`${tag}: empty branch – shown under "Egyéb".`); bname = 'Egyéb'; }
     const hraw = get('horizon');
     let horizon = HORIZON_MAP[norm(hraw)];
@@ -620,24 +650,17 @@ function buildModel(rows) {
     const bkey = norm(bname);
     let b = bmap.get(bkey);
     if (!b) {
-      b = { key: 'b' + branches.length, name: bname, color: colorFor(branches.length), lanes: [], lmap: new Map(), goals: [] };
+      b = { key: 'b' + branches.length, name: bname, color: colorFor(order == null ? branches.length : order), lanes: [], lmap: new Map(), goals: [] };
       bmap.set(bkey, b); branches.push(b);
     }
     const sub = get('sub_branch'), lkey = norm(sub);
     let lane = b.lmap.get(lkey);
     if (!lane) { lane = { name: sub, goals: [] }; b.lmap.set(lkey, lane); b.lanes.push(lane); }
 
-    const g = { id: goals.length, row: rowNo, title, desc: get('description'), horizon, status, start, due, kind, owner: get('owner'), link: cleanLink(get('link'), tag), branch: b, lane };
+    const g = { id: goals.length, tag, title, desc: get('description'), horizon, status, start, due, kind, owner: get('owner'), link: cleanLink(get('link'), tag), branch: b, lane };
     if (kind === 'open') g.end = Math.max(start + 45, band(horizon).to);   // no fixed end: fade out at the end of its horizon
     lane.goals.push(g); b.goals.push(g); goals.push(g);
   }
-  for (const b of branches) {
-    b.lanes.sort((a, c) => (a.name ? 1 : 0) - (c.name ? 1 : 0));   // general lane first, others keep sheet order
-    let i = 0;
-    for (const l of b.lanes) l.shade = l.name ? i++ : -1;
-    b.hasSubs = b.lanes.some(l => l.name);
-  }
-  return { branches, goals };
 }
 
 /* Dates win over the horizon, but obvious mismatches are reported */
@@ -648,7 +671,7 @@ function checkHorizons(goals) {
     if (g.kind === 'undated') continue;
     const s = g.start != null ? g.start : g.due, e = g.due != null ? g.due : g.start;
     const [lo, hi] = win[g.horizon];
-    if (e < lo || s > hi) warn(`Row ${g.row} ("${g.title}"): dates ${iso(s)}${e !== s ? ' – ' + iso(e) : ''} do not match horizon "${g.horizon}" (${windowText(g.horizon)}). Placed by its dates.`);
+    if (e < lo || s > hi) warn(`${g.tag}: dates ${iso(s)}${e !== s ? ' – ' + iso(e) : ''} do not match horizon "${g.horizon}" (${windowText(g.horizon)}). Placed by its dates.`);
   }
 }
 
@@ -1005,14 +1028,14 @@ function showMessage(html) {
 }
 function showError(err) {
   const kind = err && err.kind;
-  const local = location.protocol === 'file:' && !String(CONFIG.CSV_URL || '').trim();
+  const local = location.protocol === 'file:' && isDemo();
   const hints = {
-    network: local ? 'Helyi fájlként megnyitva a böngésző nem engedi betölteni a roadmap_template.csv-t. Add meg a CSV_URL-t, vagy nyisd meg az oldalt webszerveren (pl. GitHub Pages) keresztül.'
+    network: local ? 'Helyi fájlként megnyitva a böngésző nem engedi betölteni a roadmap_template.csv-t. Add meg a SHEET_URL-t, vagy nyisd meg az oldalt webszerveren (pl. GitHub Pages) keresztül.'
                    : 'Nem sikerült elérni az adatforrást (nincs internet, vagy a hozzáférés tiltott).',
     timeout: 'Az adatforrás nem válaszolt 20 másodpercen belül.',
-    http: 'Az adatforrás hibát adott vissza. Ellenőrizd, hogy a táblázat közzé van-e téve („Publish to web”), és hogy a CSV_URL pontos-e.',
-    html: 'A megadott link nem CSV-t ad vissza. A „Publish to web” ablakban a „Comma-separated values (.csv)” formátumot kell választani, és az ott kapott linket kell a CSV_URL-be másolni.',
-    columns: 'A táblázat első sorából hiányzik a „goal” oszlop. Az első sor oszlopnevei: branch, sub_branch, goal, description, horizon, start_date, due_date, status, owner, link.',
+    http: 'Az adatforrás hibát adott vissza. Ellenőrizd, hogy a táblázat közzé van-e téve („Publish to web”), és hogy a SHEET_URL és a BRANCHES beállítás pontos-e.',
+    html: 'A megadott link nem CSV-t ad vissza. Ellenőrizd, hogy a fül közzé van-e téve („Publish to web”), és hogy a SHEET_URL és a gid pontos-e.',
+    columns: 'A táblázat első sorából hiányzik a „goal” oszlop. Az első sor oszlopnevei: sub_branch, goal, description, horizon, start_date, due_date, status, owner, link.',
   };
   const lead = local && kind === 'network' ? hints.network
     : kind === 'html' || kind === 'columns' ? 'Az adatforrás nem a várt táblázatot adta vissza. A részletek az oldal karbantartójának szólnak.'
@@ -1047,9 +1070,31 @@ async function boot() {
   document.querySelectorAll('.dbg').forEach(n => n.remove());
   showLoading();
   try {
-    const { text, lastModified } = await fetchCSV();
+    const sources = sheetSources();
+    const results = await Promise.allSettled(sources.map(src => fetchCSV(src.url)));
     S.bands = computeBands();
-    const model = buildModel(parseCSV(text));
+    const tables = [], failed = [];
+    let firstError = null, lastModified = null;
+    results.forEach((res, i) => {
+      const src = sources[i];
+      try {
+        if (res.status === 'rejected') throw res.reason;
+        const table = { name: src.name, order: src.name ? i : null, rows: parseCSV(res.value.text) };
+        buildModel([table]);   // a broken tab must not take the others down
+        tables.push(table);
+        const lm = res.value.lastModified;
+        if (lm && !isNaN(lm) && (!lastModified || lm > lastModified)) lastModified = lm;
+      } catch (e) {
+        firstError = firstError || e;
+        failed.push(src);
+        warn(`${src.name || 'Sheet'}: could not be loaded (${e.detail || e.message}).`);
+      }
+    });
+    if (!tables.length && firstError) throw firstError;
+    S.warnings = S.warnings.filter(w => failed.some(f => w.startsWith((f.name || 'Sheet') + ': could not')));
+    const model = buildModel(tables);
+    el.notice.hidden = !failed.length;
+    el.notice.textContent = 'Nem sikerült betölteni: ' + failed.map(f => f.name).join(', ');
     S.model = null;
     if (!model.goals.length) {
       showMessage('<div class="msg empty"><div class="msg-ic">i</div><h2>Még nincs megjeleníthető cél</h2><p>Az ütemterv táblázata üres.</p></div>');
@@ -1155,7 +1200,7 @@ window.addEventListener('resize', () => {
 /* header texts */
 document.title = `${CONFIG.ORG_NAME} · Ütemterv`;
 $('#orgName').textContent = CONFIG.ORG_NAME;
-el.demo.hidden = !!String(CONFIG.CSV_URL || '').trim();
+el.demo.hidden = !isDemo();
 setLegend(false);
 boot();
 </script>
