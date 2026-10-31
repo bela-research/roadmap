@@ -1,0 +1,21 @@
+branch,sub_branch,goal,description,horizon,start_date,due_date,status,owner,link
+Pénzügyek,,Éves költségvetés 2027,"A 2027-es bevételi és kiadási terv elkészítése, a közgyűlés elé terjesztve.",now,,2026-12-15,in progress,Kovács Anna,
+Pénzügyek,Pályázatok,NEA működési pályázat beadása,"A Nemzeti Együttműködési Alap működési támogatásának megpályázása (irodabérlet, könyvelés, kommunikáció).",now,2026-11-02,2026-12-10,in progress,Szabó Péter,
+Pénzügyek,Pályázatok,Nemzetközi alapítványi társfinanszírozás,Kapcsolatfelvétel nemzetközi alapítványokkal a tervezett klinikai vizsgálat társfinanszírozására.,next,,,planned,,
+Pénzügyek,Tagdíjak,Online tagdíjfizetés bevezetése,"Bankkártyás és átutalásos tagdíjfizetés a weboldalon, automatikus emlékeztetőkkel.",now,2026-09-15,2026-10-20,done,Tóth Eszter,
+Pénzügyek,Adományok,SZJA 1%-os kampány 2027,Kommunikációs kampány az adó 1%-os felajánlásaiért; a bevallási határidő május 20.,next,2027-03-01,2027-05-20,planned,Kommunikációs munkacsoport,https://nav.gov.hu
+Pénzügyek,Adományok,Rendszeres támogatói program,"Havi, kis összegű támogatói kör kialakítása, éves beszámolóval a támogatóknak.",later,,,planned,,
+Jogi ügyek,,Jogi helyzetelemzés a terápiás alkalmazásról,Független jogi szakvélemény a pszilocibin és az MDMA terápiás felhasználásának hazai és uniós szabályozási feltételeiről.,now,2026-09-01,2026-12-20,in progress,dr. Nagy Gábor,
+Jogi ügyek,,Alapszabály-módosítás a közgyűlésen,"Az egyesület céljainak pontosítása, hogy kutatási együttműködésekben is részt vehessen.",now,,2027-01-20,delayed,Elnökség,
+Jogi ügyek,,Egyeztetés az NNGYK-val,Előzetes egyeztetés a Nemzeti Népegészségügyi és Gyógyszerészeti Központtal a klinikai vizsgálatok engedélyezésének menetéről.,next,,2027-03-31,planned,,
+Jogi ügyek,,Szakpolitikai javaslatcsomag,"Javaslatok döntéshozóknak a felügyelt terápiás hozzáférés jogi kereteiről, nemzetközi (pl. ausztrál, cseh) példák alapján.",later,,,planned,,
+Kutatás,,Magyar nyelvű szakirodalmi összefoglaló,A legfontosabb klinikai vizsgálatok eredményeinek közérthető összefoglalása a tagság és a sajtó számára.,now,2026-08-17,2026-10-09,done,dr. Kiss Réka,
+Kutatás,Klinikai vizsgálat,Együttműködés egyetemi klinikával,Egy hazai egyetemi pszichiátriai klinika megnyerése vizsgálóhelynek; szándéknyilatkozat aláírása.,next,,,in progress,dr. Kiss Réka,
+Kutatás,Klinikai vizsgálat,Vizsgálati protokoll első változata,"A tervezett vizsgálat céljai, beválasztási feltételei és biztonsági eljárásai, szakmai véleményezésre előkészítve.",next,2027-02-01,2027-06-30,planned,Kutatási munkacsoport,
+Kutatás,Klinikai vizsgálat,Engedélykérelem benyújtása (CTIS),"Klinikai vizsgálati kérelem benyújtása az EU központi rendszerén (CTIS) keresztül, hazai etikai véleményezéssel.",later,,2027-10-15,planned,,https://euclinicaltrials.eu
+Kutatás,Felmérések,Lakossági attitűdfelmérés,"Országos online kérdőív arról, mit tudnak és gondolnak az emberek a pszichedelikus-asszisztált terápiáról.",now,2026-11-16,2027-01-31,planned,,
+Közösség,Rendezvények,Nyílt előadás Budapesten,Ingyenes nyilvános előadás és kerekasztal-beszélgetés a kutatások jelenlegi állásáról.,now,,2026-11-20,planned,Horváth Dóra,
+Közösség,Rendezvények,"Vidéki előadássorozat (Debrecen, Szeged, Pécs)",,later,,,planned,,
+Közösség,Kommunikáció,Új weboldal és havi hírlevél,"Átlátható, közérthető tájékoztatás a tagságnak és az érdeklődőknek; havi hírlevél indítása.",now,,,in progress,Kommunikációs munkacsoport,
+Képzés,,Nemzetközi képzési partner kiválasztása,"Elismert külföldi terapeutaképző programok összehasonlítása, partnerségi tárgyalások.",next,,,delayed,Képzési munkacsoport,
+Képzés,,Terapeutaképzési tanterv kidolgozása,"Hazai, akkreditálható képzési program vázlata pszichiátereknek és klinikai szakpszichológusoknak.",later,2027-08-02,2028-01-31,planned,,
