@@ -78,7 +78,7 @@ If your Google account belongs to a school or company, its administrator may hav
    ```js
    CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-…/pub?gid=0&single=true&output=csv',
    ```
-4. In the same block, replace `Egyesületünk neve` in `ORG_NAME` with your association's name. You can also change `SUBTITLE`.
+4. In the same block, replace `Egyesületünk neve` in `ORG_NAME` with your association's name.
    Keep the quotes `'…'` and the comma at the end of each line.
 5. Save the file (**Ctrl+S**).
 6. Double-click `index.html` to open it in your browser. It should now show the data from your Google Sheet, and the yellow *Bemutató adatok* (demo data) badge should be gone. (If your browser refuses to load data from a file on your computer, continue anyway: it will work once the site is on GitHub Pages.)
@@ -87,7 +87,7 @@ Other settings in the same block:
 
 - `HORIZONS`: how many months *Most*, *Következő* and *Később* cover (default 0–3, 3–9 and 9+ months from today).
 - `DEFAULT_ZOOM`: `'auto'` (recommended), or `'month'`, `'quarter'`, `'year'`.
-- `BRANCH_COLORS`: branch colours, in the order branches appear in the sheet. The default order is chosen so colour-blind readers can tell neighbouring branches apart.
+- `BRANCH_COLORS`: branch colours, in the order branches appear in the sheet. The default is a soft purple-blue-green scale, so tell branches apart by their names rather than by colour alone.
 
 ---
 
