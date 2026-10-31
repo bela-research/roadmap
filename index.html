@@ -28,8 +28,8 @@
   --gold: #e0b25c;
   --gold-deep: #c28f35;
   --on-gold: #3d2c05;
-  --good: #2e8b62;
-  --critical: #ba1a1a;
+  --good: #2b9a7f;
+  --critical: #c4453f;
   --hz: 74, 134, 190;              /* hue of the horizon bands (rgb) */
   --labelW: 264px;                /* set by the script */
   --axisH: 72px;
@@ -67,13 +67,13 @@ button { font: inherit; color: inherit; }
 .app:not(.ready) .needs-data { visibility: hidden; }
 
 /* ---------- legend ---------- */
-.legend { flex: none; display: flex; flex-wrap: wrap; gap: 10px 28px; padding: 0 20px 14px; font-size: 12.5px; color: var(--ink-2); }
+.legend { flex: none; align-self: flex-start; display: flex; flex-wrap: wrap; gap: 8px 28px; max-width: calc(100% - 32px); margin: 0 16px 12px; padding: 8px 16px; border-radius: 12px; background: rgba(255, 255, 255, .64); font-size: 13px; color: var(--ink-2); }
 .lg-group { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; }
 .lg-title, .c-title { font-size: 12.5px; font-weight: 500; color: var(--ink-2); }
 .lg-item { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-.lg-item .ic { width: 14px; height: 14px; }
-.sw-ms { width: 9px; height: 9px; margin: 0 4px; border-radius: 2px; transform: rotate(45deg); background: var(--ink-2); }
-.sw-card { width: 24px; height: 12px; border-radius: 4px; border: 1.5px dashed var(--ink-3); background: var(--surface); }
+.lg-item .ic { width: 16px; height: 16px; }
+.sw-ms { width: 11px; height: 11px; margin: 0 3px; border-radius: 3px; transform: rotate(45deg); background: linear-gradient(135deg, #8a78cc, #5b9ad2 55%, #52b294); }
+.sw-card { width: 26px; height: 14px; border-radius: 5px; border: 1.5px dashed #5a8fc0; background: rgba(255, 255, 255, .82); }
 
 /* ---------- timeline frame ---------- */
 .stage { flex: 1 1 auto; min-height: 0; display: flex; padding: 0 16px 16px; }
@@ -154,8 +154,8 @@ button { font: inherit; color: inherit; }
 .item.is-active { z-index: 4; outline: 2px solid var(--accent); outline-offset: 2px; }
 .content { position: relative; display: flex; align-items: center; gap: 8px; height: 100%; padding: 0 10px; }
 .ic { flex: none; display: block; width: 16px; height: 16px; }
-.ic-planned { color: var(--ink-3); }
-.ic-progress { color: var(--ink-2); }
+.ic-planned { color: #5a8fc0; }
+.ic-progress { color: var(--accent); }
 .ic-done { color: var(--good); }
 .ic-delayed { color: var(--critical); }
 .txt { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
@@ -269,7 +269,7 @@ button { font: inherit; color: inherit; }
 @media (max-width: 640px) {
   .top { padding: 12px 14px 10px; gap: 10px; }
   .brand h1 { font-size: 18px; }
-  .legend { padding: 0 14px 12px; gap: 8px 20px; }
+  .legend { max-width: calc(100% - 28px); margin: 0 14px 10px; padding: 8px 12px; gap: 8px 20px; }
   .stage { padding: 0; }
   .tl-card { border-radius: 0; box-shadow: 0 -1px 0 var(--grid); }
   .seg button { padding: 0 12px; }
