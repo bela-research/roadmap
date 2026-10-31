@@ -62,17 +62,9 @@ button { font: inherit; color: inherit; }
 .lg-group { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; }
 .lg-title, .c-title { font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); }
 .lg-item { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-.lg-item .muted { color: var(--ink-3); }
 .lg-item .ic { width: 14px; height: 14px; }
-.sw-dot { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
-.sw-band { width: 20px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(var(--hz), .25); }
-.sw-band.h-now { background: rgba(var(--hz), .10); }
-.sw-band.h-next { background: rgba(var(--hz), .06); }
-.sw-band.h-later { background: rgba(var(--hz), .03); }
-.sw-bar { width: 24px; height: 10px; border-radius: 4px; background: #e6e5df; box-shadow: inset 0 0 0 1px #c9c8bf; }
 .sw-ms { width: 9px; height: 9px; margin: 0 4px; border-radius: 2px; transform: rotate(45deg); background: var(--ink-2); }
 .sw-card { width: 24px; height: 12px; border-radius: 4px; border: 1.5px dashed var(--ink-3); background: var(--surface); }
-.sw-open { width: 24px; height: 10px; border-radius: 4px; background: linear-gradient(90deg, #cfcec6 40%, rgba(207, 206, 198, 0)); }
 
 /* ---------- timeline frame ---------- */
 .stage { flex: 1 1 auto; min-height: 0; display: flex; padding: 0 16px 16px; }
@@ -1026,14 +1018,9 @@ function showError(err) {
   $('#retryBtn').addEventListener('click', boot);
 }
 function renderLegend() {
-  const hasOpen = S.model.goals.some(g => g.kind === 'open');
   const groups = [
-    ['Területek', S.model.branches.map(b => `<span class="lg-item"><span class="sw-dot" style="--c:${b.color}"></span>${esc(b.name)}</span>`)],
     ['Állapot', Object.keys(STATUS).map(k => `<span class="lg-item">${ICON[k]}${STATUS[k]}</span>`)],
-    ['Időtáv', S.bands.map(b => `<span class="lg-item"><span class="sw-band h-${b.key}"></span>${esc(b.label)} <span class="muted">${esc(windowText(b.key))}</span></span>`)],
-    ['Jelölés', ['<span class="lg-item"><span class="sw-bar"></span>Időszak (kezdés–határidő)</span>', '<span class="lg-item"><span class="sw-ms"></span>Határidő</span>']
-      .concat(hasOpen ? ['<span class="lg-item"><span class="sw-open"></span>Nyitott végű</span>'] : [])
-      .concat(['<span class="lg-item"><span class="sw-card"></span>Hozzávetőleges (dátum nélkül)</span>'])],
+    ['Jelölés', ['<span class="lg-item"><span class="sw-ms"></span>Határidő</span>', '<span class="lg-item"><span class="sw-card"></span>Hozzávetőleges (dátum nélkül)</span>']],
   ];
   el.legend.innerHTML = groups.map(([t, items]) => `<div class="lg-group"><span class="lg-title">${t}</span>${items.join('')}</div>`).join('');
 }
@@ -1164,7 +1151,7 @@ document.title = `${CONFIG.ORG_NAME} · Ütemterv`;
 $('#orgName').textContent = CONFIG.ORG_NAME;
 $('#subtitle').textContent = CONFIG.SUBTITLE;
 el.demo.hidden = !!String(CONFIG.CSV_URL || '').trim();
-setLegend(window.innerWidth >= 900);
+setLegend(false);
 boot();
 </script>
 </body>
